@@ -1,0 +1,81 @@
+[
+    {
+        "__type": "perso",
+        "Name": "John Doe",
+        "Address": "Jalan santai kemana aja ayo ayo",
+        "Link": [
+            {
+                "Text": "08112111",
+                "Redirect": "tel:08112111"
+            },
+            {
+                "Text": "08112111",
+                "Redirect": "mailto:jogh@doe.doe"
+            },
+            {
+                "Text": "08112111",
+                "Redirect": "mailto:jogh@doe.doe"
+            }
+        ]
+    },
+    {
+        "__type": "sum",
+        "Summary": "Results-driven Automation Engineer with 5+ years of experience in designing, developing, and implementing automated systems and processes. Proficient in various automation tools and programming languages, with a proven track record of improving efficiency and reducing operational costs."
+    },
+    {
+        "__type": "ts",
+        "Expertise": {
+            "Programming Language": [
+                "Golang",
+                "C#",
+                "Javascript",
+                "Java"
+            ],
+            "Tools": [
+                "Jenkins",
+                "Postman",
+                "git",
+                "docker"
+            ]
+        }
+    },
+    {
+        "__type": "edu",
+        "School": "University of Example",
+        "Location": "Jakarta",
+        "Degree": "B.Sc. Computer Science",
+        "Period": {
+            "StartTime": "2020-05-17T23:55:00.753706+07:00",
+            "EndTime": "2024-07-17T23:55:00.754009+07:00"
+        }
+    },
+    {
+        "__type": "exp",
+        "WorkExperiences": [
+            {
+                "Period": {
+                    "StartTime": "2020-05-17T23:55:00.754014+07:00",
+                    "EndTime": "2024-07-17T23:55:00.754015+07:00"
+                },
+                "Company": "Example Corp",
+                "Role": "Software Engineer",
+                "JobDesc": [
+                    "Doing 1, Doing 2, Doing 3, Doing 4,Doing 5, Doing 6, Doing 7, Doing 8,Doing 9, Doing 10, Doing 11, Doing 12,Doing 13, Doing 14, Doing Nothing",
+                    "Helping people"
+                ]
+            },
+            {
+                "Period": {
+                    "StartTime": "2021-04-17T23:55:00.754015+07:00",
+                    "EndTime": "2024-05-17T23:55:00.754015+07:00"
+                },
+                "Company": "Paypal Corp",
+                "Role": "Software Engineer",
+                "JobDesc": [
+                    "Doing PR Review",
+                    "Fix Prod Issue"
+                ]
+            }
+        ]
+    }
+]

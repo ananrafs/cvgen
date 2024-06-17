@@ -1,7 +1,10 @@
 package main
 
 import (
+	"encoding/json"
+	"fmt"
 	"log"
+	"os"
 	"time"
 
 	"github.com/ananrafs/cvgen"
@@ -12,7 +15,7 @@ import (
 
 func main() {
 
-	sections := []cvgen.Section{
+	defaultSections := []cvgen.Section{
 		cvgen.PersonalInfoSection{
 			Name:    "John Doe",
 			Address: "Jalan santai kemana aja ayo ayo",
@@ -28,6 +31,15 @@ func main() {
 					"08112111",
 					"mailto:jogh@doe.doe",
 				},
+			},
+		},
+		cvgen.SummarySection{
+			Summary: "Results-driven Automation Engineer with 5+ years of experience in designing, developing, and implementing automated systems and processes. Proficient in various automation tools and programming languages, with a proven track record of improving efficiency and reducing operational costs.",
+		},
+		cvgen.ExpertiseSection{
+			Expertise: map[string][]string{
+				"Programming Language": {"Golang", "C#", "Javascript", "Java"},
+				"Tools":                {"Jenkins", "Postman", "git", "docker"},
 			},
 		},
 		cvgen.EducationSection{
@@ -52,9 +64,6 @@ func main() {
 						"Doing 1, Doing 2, Doing 3, Doing 4,Doing 5, Doing 6, Doing 7, Doing 8,Doing 9, Doing 10, Doing 11, Doing 12,Doing 13, Doing 14, Doing Nothing",
 						"Helping people",
 					},
-					TechStack: []string{
-						"Go", "Docker", "Python", "SQLServer", "Go", "Docker", "Python", "SQLServer", "Go", "Docker", "Python", "SQLServer", "Go", "Docker", "Python", "SQLServer", "Go", "Docker", "Python", "SQLServer",
-					},
 				},
 				{
 					Period: cvgen.Period{
@@ -67,19 +76,68 @@ func main() {
 						"Doing PR Review",
 						"Fix Prod Issue",
 					},
-					TechStack: []string{
-						"Go", "Docker", "Python", "SQLServer",
-					},
 				},
 			},
 		},
+	}
+	// if err := CreateDummy(defaultSections, "dummy.json"); err != nil {
+	// 	log.Fatal(err)
+	// }
+
+	sections, err := GetSection("dummy.json")
+	if err != nil {
+		fmt.Println(err)
+		sections = defaultSections
 	}
 
 	if err := cvgen.Render("cv.pdf", sections,
 		NewGoPDFAdapter(gopdf.Config{PageSize: *gopdf.PageSizeA4})); err != nil {
 		log.Fatal(err)
 	}
+}
 
+func GetSection(filename string) (cvgen.Sections, error) {
+	// Open the JSON file
+	file, err := os.Open(filename)
+	if err != nil {
+		return nil, err
+	}
+	defer file.Close()
+
+	// Create a variable of the appropriate type to hold the unmarshaled data
+	var sections cvgen.Sections
+
+	// Create a JSON decoder
+	decoder := json.NewDecoder(file)
+
+	// Decode the JSON data
+	err = decoder.Decode(&sections)
+	if err != nil {
+		return nil, err
+	}
+	return sections, nil
+}
+
+func CreateDummy(s cvgen.Sections, fileName string) error {
+	// Marshal the struct to JSON.
+	jsonData, err := json.MarshalIndent(s, "", "    ")
+	if err != nil {
+		return err
+	}
+
+	// Create and open a file for writing.
+	file, err := os.Create(fileName)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
+	// Write the JSON data to the file.
+	_, err = file.Write(jsonData)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 type GoPDFAdapter struct {
@@ -99,7 +157,6 @@ func (g *GoPDFAdapter) Generate(fileName string, sections cvgen.Sections) error 
 	g.pdf.AddPage()
 	err := g.pdf.AddTTFFont("Lato", "./ttf/Lato-Regular.ttf")
 	if err != nil {
-
 		return err
 	}
 	err = g.pdf.AddTTFFontWithOption("Lato", "./ttf/Lato-Bold.ttf", gopdf.TtfOption{
@@ -138,6 +195,7 @@ func (g *GoPDFAdapter) Write(input string, opts ...text.WriterOptions) {
 		opt(&wOpt)
 	}
 
+	var lineSpacing float64 = 5
 	switch wOpt.Style {
 	case text.Content:
 		g.pdf.SetFont("Lato", "", 12)
@@ -145,12 +203,15 @@ func (g *GoPDFAdapter) Write(input string, opts ...text.WriterOptions) {
 		g.pdf.SetFont("Lato", "I", 13)
 	case text.Title:
 		g.pdf.SetFont("Lato", "B", 14)
+		lineSpacing = 1
 	case text.ContentBold:
 		g.pdf.SetFont("Lato", "B", 12)
 	case text.Heading:
 		g.pdf.SetFont("Lato", "B", 18)
+		lineSpacing = 1
 	case text.MainHeading:
 		g.pdf.SetFont("Lato", "B", 21)
+		lineSpacing = 1
 	}
 
 	textAlignMap := map[text.Aligner]int{
@@ -165,7 +226,6 @@ func (g *GoPDFAdapter) Write(input string, opts ...text.WriterOptions) {
 		cellWidth = wOpt.Width.End - wOpt.Width.Start
 		g.SetPosition(wOpt.Width.Start, currY)
 	}
-
 	if wOpt.Link != nil {
 		width, _ := g.pdf.MeasureTextWidth(input)
 		height, _ := g.pdf.MeasureCellHeightByText(input)
@@ -184,22 +244,34 @@ func (g *GoPDFAdapter) Write(input string, opts ...text.WriterOptions) {
 		g.pdf.SetTextColor(draw.Blue.GetRGB())
 		g.pdf.MultiCellWithOption(&gopdf.Rect{
 			W: cellWidth,
-		}, input, gopdf.CellOption{Align: textAlignMap[wOpt.Align]})
+		}, input,
+			gopdf.CellOption{
+				Align:       textAlignMap[wOpt.Align],
+				BreakOption: &gopdf.BreakOption{Mode: gopdf.BreakModeIndicatorSensitive, BreakIndicator: ' '},
+				LineSpacing: &lineSpacing,
+			})
 		g.pdf.AddExternalLink(*wOpt.Link, start, prevY, end-start, height)
 		g.pdf.SetTextColor(draw.Black.GetRGB())
+		x, y := g.GetPosition()
+		g.SetPosition(x, y-5)
 		g.DrawLine(start, end, draw.WithColor(draw.Blue))
 		return
 	}
 
 	g.pdf.MultiCellWithOption(&gopdf.Rect{
 		W: cellWidth,
-	}, input, gopdf.CellOption{Align: textAlignMap[wOpt.Align], BreakOption: &gopdf.BreakOption{Mode: gopdf.BreakModeIndicatorSensitive, BreakIndicator: ' '}})
+	}, input,
+		gopdf.CellOption{
+			Align:       textAlignMap[wOpt.Align],
+			BreakOption: &gopdf.BreakOption{Mode: gopdf.BreakModeIndicatorSensitive, BreakIndicator: ' '},
+			LineSpacing: &lineSpacing,
+		})
 }
 func (g *GoPDFAdapter) Next() {
 	g.pdf.Br(10)
 }
 func (g *GoPDFAdapter) NextSection() {
-	g.pdf.Br(30)
+	g.pdf.Br(15)
 }
 func (g *GoPDFAdapter) SetPosition(x float64, y float64) {
 	g.pdf.SetX(x)
