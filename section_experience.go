@@ -2,7 +2,6 @@ package cvgen
 
 import (
 	"log"
-	"strings"
 
 	"github.com/ananrafs/cvgen/text"
 )
@@ -13,11 +12,10 @@ type ExperienceSection struct {
 }
 
 type WorkExperience struct {
-	Period    Period
-	Company   string
-	Role      string
-	JobDesc   []string
-	TechStack []string
+	Period  Period
+	Company string
+	Role    string
+	JobDesc []string
 }
 
 // Render renders the experience section as a string
@@ -76,13 +74,6 @@ func (e ExperienceSection) Render(w PDFWriter) {
 				text.WithWidth(2*w.GetMargin()+10, w.GetWidth()-w.GetMargin()),
 			)
 		}
-		w.Write("Tech Stack :",
-			text.WithWidth(w.GetMargin()+10, w.GetWidth()-w.GetMargin()),
-		)
-		w.Write(
-			strings.Join(we.TechStack, ", "),
-			text.WithWidth(2*w.GetMargin(), w.GetWidth()-w.GetMargin()),
-		)
 
 		w.Next()
 	}

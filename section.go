@@ -31,6 +31,10 @@ func (s *Sections) UnmarshalJSON(data []byte) error {
 			instance = new(EducationSection)
 		case "perso":
 			instance = new(PersonalInfoSection)
+		case "ts":
+			instance = new(ExpertiseSection)
+		case "sum":
+			instance = new(SummarySection)
 		case "exp":
 			instance = new(ExperienceSection)
 		}
@@ -58,13 +62,10 @@ type PDFGenerator interface {
 }
 
 func CommonRenderTitle(title string, w PDFWriter) {
-	defer func() {
-		_, currY := w.GetPosition()
-		w.SetPosition(0, currY)
-	}()
-	_, currY := w.GetPosition()
-	w.SetPosition(w.GetMargin(), currY)
-	w.Write(title, text.WithStyle(text.Heading))
+	w.Write(title,
+		text.WithStyle(text.Heading),
+		text.WithWidth(w.GetMargin(), w.GetWidth()-w.GetMargin()),
+	)
 	w.DrawLine(w.GetMargin()-5, w.GetWidth()-w.GetMargin()+5)
 	w.Next()
 }

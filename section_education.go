@@ -28,15 +28,16 @@ func (e EducationSection) Render(w PDFWriter) {
 		margin := w.GetMargin()
 		_, currY := w.GetPosition()
 		for _, width := range widthRatio {
-			w.SetPosition(margin, currY)
 			switch j {
 			case 0:
+				w.SetPosition(margin, currY)
 				w.Write(
 					fmt.Sprintf("%s, %s", e.School, e.Location),
 					text.WithStyle(text.Title),
 					text.WithWidth(margin, w.GetWidth()-w.GetMargin()),
 				)
 			case 1:
+				w.SetPosition(margin, currY)
 				w.Write(
 					e.Period.String(),
 					text.WithAlign(text.Right),
@@ -44,6 +45,7 @@ func (e EducationSection) Render(w PDFWriter) {
 					text.WithWidth(margin, w.GetWidth()-w.GetMargin()),
 				)
 			case 2:
+				w.SetPosition(margin, currY)
 				w.Write(
 					e.Degree,
 					text.WithStyle(text.Subtitle),

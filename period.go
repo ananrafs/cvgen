@@ -15,5 +15,5 @@ func (p Period) String() string {
 	if p.EndTime.After(time.Now()) {
 		endPeriod = "Present"
 	}
-	return fmt.Sprintf("%s - %s", p.StartTime.Format("Jan 2006"), endPeriod)
+	return fmt.Sprintf("%s – %s", p.StartTime.Format("Jan 2006"), endPeriod)
 }

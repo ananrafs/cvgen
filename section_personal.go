@@ -79,7 +79,6 @@ func (p PersonalInfoSection) Render(w PDFWriter) {
 			)
 			j++
 		}
-
 	}
 
 }
