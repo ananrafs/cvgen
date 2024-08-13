@@ -84,7 +84,7 @@ func main() {
 	// 	log.Fatal(err)
 	// }
 
-	sections, err := GetSection("dummy.json")
+	sections, err := GetSection("cv.json")
 	if err != nil {
 		fmt.Println(err)
 		sections = defaultSections
@@ -178,7 +178,7 @@ func (g *GoPDFAdapter) Generate(fileName string, sections cvgen.Sections) error 
 		g.NextSection()
 	}
 
-	return g.pdf.WritePdf("../out/cv.pdf")
+	return g.pdf.WritePdf("./out/cv.pdf")
 }
 func (g *GoPDFAdapter) GetWidth() float64 {
 	return g.cfg.PageSize.W
@@ -188,29 +188,30 @@ func (g *GoPDFAdapter) GetMargin() float64 {
 }
 func (g *GoPDFAdapter) Write(input string, opts ...text.WriterOptions) {
 	defer func() {
-		g.pdf.Br(5)
+		g.pdf.Br(2)
 	}()
 	wOpt := text.WriterOption{}
 	for _, opt := range opts {
 		opt(&wOpt)
 	}
 
-	var lineSpacing float64 = 5
+	var lineSpacing float64 = 2
 	switch wOpt.Style {
 	case text.Content:
 		g.pdf.SetFont("Lato", "", 12)
+		lineSpacing = 1
 	case text.Subtitle:
 		g.pdf.SetFont("Lato", "I", 13)
 	case text.Title:
-		g.pdf.SetFont("Lato", "B", 14)
+		g.pdf.SetFont("Lato", "B", 13)
 		lineSpacing = 1
 	case text.ContentBold:
 		g.pdf.SetFont("Lato", "B", 12)
 	case text.Heading:
-		g.pdf.SetFont("Lato", "B", 18)
+		g.pdf.SetFont("Lato", "B", 17)
 		lineSpacing = 1
 	case text.MainHeading:
-		g.pdf.SetFont("Lato", "B", 21)
+		g.pdf.SetFont("Lato", "B", 20)
 		lineSpacing = 1
 	}
 
@@ -241,7 +242,6 @@ func (g *GoPDFAdapter) Write(input string, opts ...text.WriterOptions) {
 			start, end = prevX+cellWidth-width, prevX+cellWidth
 		}
 
-		g.pdf.SetTextColor(draw.Blue.GetRGB())
 		g.pdf.MultiCellWithOption(&gopdf.Rect{
 			W: cellWidth,
 		}, input,
@@ -253,8 +253,8 @@ func (g *GoPDFAdapter) Write(input string, opts ...text.WriterOptions) {
 		g.pdf.AddExternalLink(*wOpt.Link, start, prevY, end-start, height)
 		g.pdf.SetTextColor(draw.Black.GetRGB())
 		x, y := g.GetPosition()
-		g.SetPosition(x, y-5)
-		g.DrawLine(start, end, draw.WithColor(draw.Blue))
+		g.SetPosition(x, y-1)
+		g.DrawLine(start, end)
 		return
 	}
 
@@ -268,10 +268,10 @@ func (g *GoPDFAdapter) Write(input string, opts ...text.WriterOptions) {
 		})
 }
 func (g *GoPDFAdapter) Next() {
-	g.pdf.Br(10)
+	g.pdf.Br(8)
 }
 func (g *GoPDFAdapter) NextSection() {
-	g.pdf.Br(15)
+	g.pdf.Br(12)
 }
 func (g *GoPDFAdapter) SetPosition(x float64, y float64) {
 	g.pdf.SetX(x)

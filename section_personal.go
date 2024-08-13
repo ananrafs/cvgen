@@ -71,7 +71,7 @@ func (p PersonalInfoSection) Render(w PDFWriter) {
 			j++
 		}
 
-		if len(p.Link)-j == 1 {
+		for j < len(p.Link) && j > 1 {
 			w.Write(
 				p.Link[j].Text,
 				text.WithLink(p.Link[j].Redirect),
